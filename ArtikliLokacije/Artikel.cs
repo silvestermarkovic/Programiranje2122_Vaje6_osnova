@@ -18,8 +18,7 @@ namespace ArtikliLokacije
     //      public lokacije tipa   List<Lokacija> 
     //ustvarite konstuktor Artikel(int id, List<Lokacija> lokacije)
     //ustvarite public metodo vrniZalogo, ki vrne zalogo na lokacijah
-
-
+     
 
 
 }

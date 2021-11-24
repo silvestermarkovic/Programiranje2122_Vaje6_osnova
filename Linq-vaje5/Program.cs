@@ -18,40 +18,92 @@ namespace Linq_vaje5
 
             //TODO 11 ustvarite Linq poizvedbo, ki bo vrnila vse kupce iz Avstije ali Nemčije, vrnite samo naziv kup.naziv
             // var poizv1 = ....
+            var poizv1 = from kup0 in kupci
+                         where kup0.drzava == "Avstrija" || kup0.drzava == "Nemčija"
+                         select new { kup0.naziv };
+            //izpišite uporabite Extension  ReadEnumerable
+            poizv1.ReadEnumerable();
 
-          
 
             //ustvarite poizvedbo v method obliki
-         
+            var poizvM = kupci.Where(s => s.drzava == "Avstija" || s.drzava == "Nemčija").Select(s => s.naziv);
+
 
             //TODO 12. dodajte kupca 21,Kupec21,Celovec,Avstrija
             //še 1x naredite poizvedbo (z izpisom), kaj opazite?
-            
+            dodajNaSeznamKupca(new Kupec(21, "Kupec21", "Celovec", "Avstrija"), kupci);
+            poizv1.ReadEnumerable();
+
             //TODO 13. ustvarite seznam, ki bo vrnil kupce, ki NISO iz Slovenije, 
             //razvstite jih po državi, kraju in potem po nazivu, vrnite elemente od 6 do 10 mesta
-          
+            var poizv3 = (from kup3 in kupci
+                          where kup3.drzava != "Slovenija"
+                          orderby kup3.naziv
+                          orderby kup3.kraj
+                          orderby kup3.drzava
+                          select new { kup3.naziv, kup3.drzava, kup3.kraj, Dolz = kup3.kraj.Length }).Take(10).Skip(5);
+            var poizv3M = kupci.Where(s => s.drzava != "Slovenija").OrderBy(s => s.drzava).OrderBy(s => s.kraj).OrderBy(s => s.naziv).Take(10).Skip(5).Select(s => new { s.naziv, s.kraj }); ;
+            poizv3.ReadEnumerable();
+            poizv3M.ReadEnumerable();
 
             //TODO 14: ustvarite poizvedbo, ki bo vrnila, kupce razporejene po dolzini naziva kraja (naracsajoce) in nazivu
             //izpisejo naj se polja naziv, drzava,kraj in dolzina kraja (length) 
-       
+            var poizv4 = from kup2 in kupci
+                         orderby kup2.naziv
+                         orderby kup2.kraj.Length
+                         select new { kup2.naziv, kup2.drzava, kup2.kraj, Dolz = kup2.kraj.Length };
+
+            poizv4.ReadEnumerable();
+            var poizv4M = kupci.OrderBy(s => new { s.naziv, s.kraj.Length }).Select(s => new { s.naziv, s.drzava, s.kraj, Dolz = s.kraj.Length });
+
 
             //TODO 15.: prikazite vse dokumenta kupcev, ki imajo ID_kupca med 8 in 10
             //razvrstite po znesku naracajoce
-     
+            var poizv5 = from kup1 in kupci
+                         join dok1 in dokumenti
+                         on kup1.ID_kupca equals dok1.ID_kupca
+                         where kup1.ID_kupca >= 8 && kup1.ID_kupca <= 10
+                         orderby dok1.znesek
+                         select new { dok1, kup1 };
+            //             select new { kup.naziv, kup.drzava, kup.kraj, Dolz = kup.kraj.Length };
+
+            poizv5.ReadEnumerable();
 
 
 
             //TODO 16. naredite poizvedvo, ki bo vrnila seštevek po kupcih
             //izpiše naj ID_kupca, StRacunov (count), ZnesekRacunov
-             
+            var poizv6 = from dok5 in dokumenti
+                         group dok5 by dok5.ID_kupca into gr
+                         select new
+                         {
+                             NasKupec = gr.Key,
+                             StRacunov = gr.Count(),
+                             Znesek = gr.Sum(x => x.znesek)
+                         };
+
+            poizv6.ReadEnumerable();
 
 
             //TODO 17: navodila sledijo
             //ustvarite seznam,ki združi seznama kupci in dokumenti (join), po ID_kupca
             //dobljeni seznam grupirajte po državi
             //Izpišite naziv države, število dokumentov, za posamezno državo, znesek dokumentov in povprečno vrednost rdokumenta
-          
-           
+            var poizv7 = from kup7 in kupci
+                         join dok7 in dokumenti
+                         on kup7.ID_kupca equals dok7.ID_kupca
+                         group dok7 by kup7.drzava into gr
+                         orderby gr.Sum(x => x.znesek)
+                         select new
+                         {
+                             GrDrzava = gr.Key,
+                             DrzavSt = gr.Count(),
+                             ZnesekDrzava = gr.Sum(x => x.znesek),
+                             PovprecniRacunDrzava = gr.Average(x => x.znesek)
+                         };
+
+            poizv7.ReadEnumerable();
+
         }
 
 
